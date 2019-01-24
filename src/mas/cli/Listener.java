@@ -5,10 +5,10 @@
  */
 package mas.cli;
 
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 import mas.factory.Factory;
 
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 /**
  *
  * @author daniel
