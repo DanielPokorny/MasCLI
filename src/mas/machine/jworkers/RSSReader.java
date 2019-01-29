@@ -55,6 +55,7 @@ public class RSSReader extends Worker{
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document doc = builder.parse(iniFile);
         Node n = doc.getDocumentElement();
+        System.out.println(n.toString());
 
 
 /*        JAXBContext jaxbContext = JAXBContext.newInstance(RSSReaderConfig.class);
