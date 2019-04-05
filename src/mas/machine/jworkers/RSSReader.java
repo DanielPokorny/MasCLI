@@ -15,9 +15,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
@@ -50,17 +50,16 @@ public class RSSReader extends Worker{
      * @param iniFile cesta k souboru s konfigurací
      * @throws JAXBException 
      */
-    public RSSReader(File iniFile) throws ParserConfigurationException, IOException, SAXException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    public RSSReader(File iniFile) throws Exception {
+ /*       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document doc = builder.parse(iniFile);
-        Node n = doc.getDocumentElement();
-        System.out.println(n.toString());
+        Node n = doc.getDocumentElement();*/
 
 
-/*        JAXBContext jaxbContext = JAXBContext.newInstance(RSSReaderConfig.class);
+        JAXBContext jaxbContext = JAXBContext.newInstance(RSSReaderConfig.class);
         Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-        config_ = (RSSReaderConfig) jaxbUnmarshaller.unmarshal(iniFile);*/
+        config_ = (RSSReaderConfig) jaxbUnmarshaller.unmarshal(iniFile);
         this.setDaemon(true);
     }
 
