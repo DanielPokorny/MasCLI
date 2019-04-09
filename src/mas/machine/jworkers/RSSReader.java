@@ -5,27 +5,23 @@
  */
 package mas.machine.jworkers;
 
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.FeedException;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
 import mas.machine.Worker;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Odesílá nové URL extrahované z RSS feedu do výstupní linky.
@@ -47,19 +43,13 @@ public class RSSReader extends Worker{
     
     /**
      * Vytvoří nový RSSReader
-     * @param iniFile cesta k souboru s konfigurací
-     * @throws JAXBException 
+     * @param iniFile cesta k souboru s konfiguraci
      */
     public RSSReader(File iniFile) throws Exception {
- /*       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document doc = builder.parse(iniFile);
-        Node n = doc.getDocumentElement();*/
+        Gson gson = new Gson();
+        JsonReader reader = new JsonReader(new FileReader(iniFile));
+        config_ = gson.fromJson(reader, RSSReaderConfig.class);
 
-
-        JAXBContext jaxbContext = JAXBContext.newInstance(RSSReaderConfig.class);
-        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-        config_ = (RSSReaderConfig) jaxbUnmarshaller.unmarshal(iniFile);
         this.setDaemon(true);
     }
 
@@ -123,20 +113,29 @@ public class RSSReader extends Worker{
             conn = rssURL.openConnection();
         }
 
-        SyndFeedInput input = new SyndFeedInput();
-        try {
-            SyndFeed feed = input.build(new XmlReader(conn));
 
-            for (SyndEntry entry : (List<SyndEntry>) feed.getEntries()) {
-                String link = entry.getLink();
-                if(link != null) {
-                    if(isNewLink(link)){
-                        newLinks_.add(link);
-                    }
+        StringBuilder content = new StringBuilder();
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+        String line;
+        while ((line = bufferedReader.readLine()) != null)
+        {
+            content.append(line + "\n");
+        }
+        bufferedReader.close();
+
+        String input = content.toString();
+
+        Pattern pattern = Pattern.compile("<link>.+<\\/link>");
+        Matcher matcher = pattern.matcher(input);
+        while (matcher.find()) {
+            String link = matcher.group(0);
+            link = link.substring(6).substring(0, link.lastIndexOf("<") - 6);
+            if(link != null) {
+                if(isNewLink(link)){
+                    newLinks_.add(link);
                 }
             }
-        } catch (FeedException e) {
-            e.printStackTrace();
         }
     }
 

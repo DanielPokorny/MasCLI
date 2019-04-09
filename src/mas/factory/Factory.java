@@ -143,7 +143,7 @@ public class Factory {
                     String type = parameter.substring(0, parameter.indexOf(" "));
                     String name = parameter.substring(parameter.indexOf(" ") + 1);
                     File iniFile = new File(currentRepository_.toString() + File.separator + "Workers"
-                            + File.separator + "Java" + File.separator + name + ".xml");
+                            + File.separator + "Java" + File.separator + name + ".json");
                     machines_.get(currentMachine_).addJavaWorker(type, name, currentWorkspace_, iniFile);
                     String response = "Java worker " + name + " loaded.";
                     returnValue = response;
