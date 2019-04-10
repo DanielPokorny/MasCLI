@@ -5,22 +5,15 @@
  */
 package mas.machine.jworkers;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
-
 /**
  *
  * @author daniel
  */
-@XmlRootElement(name = "settings")
-@XmlSeeAlso({NetProxy.class})
 public class URLReaderConfig {
     /**
      * definice proxy serveru
      * @see NetProxy
      */
-    @XmlElement(name = "proxy")
     public NetProxy proxy;
 
     /**

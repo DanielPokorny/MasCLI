@@ -1,7 +1,9 @@
 package mas.cli;
 
+import mas.factory.Factory;
+import mas.machine.Machine;
+
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,8 +13,6 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import mas.factory.Factory;
-import mas.machine.Machine;
 
 /**
  * Ovládání systému z terminálu.
@@ -53,13 +53,11 @@ public class MasCLI {
                 }
             } else {
                 System.out.println(processLine(command));
-//                f.processCommand(command);
-//                System.out.println(f.controlQueue.take().toString());
             }
         }
     }
 
-    public static void processScript(String path) throws FileNotFoundException, IOException, InterruptedException, ClassNotFoundException, NoSuchMethodException {
+    public static void processScript(String path) throws IOException, InterruptedException, ClassNotFoundException, NoSuchMethodException {
         BufferedReader br = new BufferedReader(new FileReader(path));
         while(br.ready()) {
             String line = br.readLine();

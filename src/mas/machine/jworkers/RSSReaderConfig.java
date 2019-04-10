@@ -5,18 +5,11 @@
  */
 package mas.machine.jworkers;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
-
 /**
  *
  * @author daniel
  */
-@XmlRootElement(name = "settings")
-@XmlSeeAlso({NetProxy.class})
 public class RSSReaderConfig {
-    @XmlElement(name = "proxy")
     public NetProxy proxy;
 
     /**
@@ -24,5 +17,9 @@ public class RSSReaderConfig {
      */
     public String url;
 
+    /**
+     * Commline pro výstup
+     */
     public String output;
+
 }

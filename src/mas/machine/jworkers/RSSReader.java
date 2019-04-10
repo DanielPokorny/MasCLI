@@ -7,11 +7,7 @@ package mas.machine.jworkers;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.io.FeedException;
-import com.sun.syndication.io.SyndFeedInput;
-import com.sun.syndication.io.XmlReader;
+
 import mas.machine.Worker;
 
 import java.io.*;
@@ -29,17 +25,17 @@ import java.util.regex.Pattern;
  * @version 2.0
  */
 public class RSSReader extends Worker{
-    RSSReaderConfig config_;
+    RSSReaderConfig config;
 
     /**
      * List obsahující nově přidané odkazy.
      */
-    private List<String> newLinks_ = new ArrayList<>();
+    private List<String> newLinks = new ArrayList<>();
 
     /**
      * List obsahující již navštívené odkazy.
      */
-    private List<String> oldLinks_ = new ArrayList<>();
+    private List<String> oldLinks = new ArrayList<>();
     
     /**
      * Vytvoří nový RSSReader
@@ -48,7 +44,7 @@ public class RSSReader extends Worker{
     public RSSReader(File iniFile) throws Exception {
         Gson gson = new Gson();
         JsonReader reader = new JsonReader(new FileReader(iniFile));
-        config_ = gson.fromJson(reader, RSSReaderConfig.class);
+        config = gson.fromJson(reader, RSSReaderConfig.class);
 
         this.setDaemon(true);
     }
@@ -62,11 +58,9 @@ public class RSSReader extends Worker{
                     readLinks();
                 } catch (IOException ex) {
                     System.out.println(ex.getLocalizedMessage());
-                } catch (IllegalArgumentException | FeedException ex) {
-                    Logger.getLogger(RSSReader.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
-                if(newLinks_.size() > 0){
+                if(newLinks.size() > 0){
                     nextRead = false;
                 }else{
                     try {
@@ -77,11 +71,11 @@ public class RSSReader extends Worker{
                 }
             } while(nextRead);
 
-            String outLink = newLinks_.get(0);
-            newLinks_.remove(0);
-            oldLinks_.add(outLink);
+            String outLink = newLinks.get(0);
+            newLinks.remove(0);
+            oldLinks.add(outLink);
 
-            sendMesage_(config_.output, outLink);
+            sendMesage_(config.output, outLink);
         }
     }
 
@@ -89,19 +83,19 @@ public class RSSReader extends Worker{
      * Extrahuje odkazy z textu.
      * @throws IOException něco je špatně.
      */
-    private void readLinks() throws IOException, IllegalArgumentException, FeedException{
+    private void readLinks() throws IOException, IllegalArgumentException {
         URL rssURL = null;
         try {
-            rssURL = new URL(config_.url);
+            rssURL = new URL(config.url);
         } catch (MalformedURLException ex) {
             Logger.getLogger(RSSReader.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         URLConnection conn = null;
 
-        if(config_.proxy != null) {
+        if(config.url != null) {
             Authenticator.setDefault(authenticator);
-            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(config_.proxy.address, config_.proxy.port));
+            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(config.proxy.address, config.proxy.port));
 
             try {
                     conn = rssURL.openConnection(proxy);
@@ -133,7 +127,7 @@ public class RSSReader extends Worker{
             link = link.substring(6).substring(0, link.lastIndexOf("<") - 6);
             if(link != null) {
                 if(isNewLink(link)){
-                    newLinks_.add(link);
+                    newLinks.add(link);
                 }
             }
         }
@@ -149,7 +143,7 @@ public class RSSReader extends Worker{
          */
         @Override
         public PasswordAuthentication getPasswordAuthentication() {
-            return (new PasswordAuthentication(config_.proxy.username, config_.proxy.password.toCharArray()));
+            return (new PasswordAuthentication(config.proxy.username, config.proxy.password.toCharArray()));
         }
     };
 
@@ -160,13 +154,13 @@ public class RSSReader extends Worker{
      */
     private boolean isNewLink(String link){
         boolean returnValue = true;
-        for(String oldLink : oldLinks_){
+        for(String oldLink : oldLinks){
             if(link.equals(oldLink)){
                 returnValue = false;
             }
         }
 
-        for(String newLink : newLinks_){
+        for(String newLink : newLinks){
             if(link.equals(newLink)){
                 returnValue = false;
             }

@@ -5,19 +5,21 @@
  */
 package mas.machine.jworkers;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
-import java.net.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
 import mas.machine.Worker;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+
+import javax.xml.bind.JAXBException;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.net.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Načítá ze zadané commlinky jednotlivé URL a zapisuje do vystupní commlinky načtený obsah.
@@ -34,10 +36,10 @@ public class URLReader extends Worker{
      * @param iniFile soubor *.xml s konfigurací
      * @throws JAXBException
      */
-    public URLReader(File iniFile) throws JAXBException {
-        JAXBContext jaxbContext = JAXBContext.newInstance(URLReaderConfig.class);
-        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-        config = (URLReaderConfig) jaxbUnmarshaller.unmarshal(iniFile);
+    public URLReader(File iniFile) throws Exception {
+        Gson gson = new Gson();
+        JsonReader reader = new JsonReader(new FileReader(iniFile));
+        config = gson.fromJson(reader, URLReaderConfig.class);
         this.setDaemon(true);
     }
 
@@ -46,6 +48,7 @@ public class URLReader extends Worker{
      */
     @Override
     public void run() {
+        System.out.println("URL reader hallo");
         while(true) {
             URL url;
             try {
@@ -64,12 +67,6 @@ public class URLReader extends Worker{
 
                     doc = Jsoup.parse(String.valueOf(tmp));
                     uc.disconnect();
-
-/*                    doc = Jsoup
-                        .connect(url)
-                        .userAgent("Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2")
-                        .header("Content-Language", "en-US")
-                        .get();*/
                 } else {
                     Authenticator.setDefault(authenticator);
                     Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(config.proxy.address, config.proxy.port));
@@ -85,14 +82,6 @@ public class URLReader extends Worker{
 
                     doc = Jsoup.parse(String.valueOf(tmp));
                     uc.disconnect();
-
-                    /*doc = Jsoup
-                        .connect(url)
-                        . proxy(proxy) // sets a HTTP proxy
-                        .userAgent("Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2")
-                        .header("Content-Language", "en-US")
-                        .get();*/
-
                 }
 
                 String outputLine = "";

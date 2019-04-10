@@ -58,7 +58,7 @@ public class Machine {
         stb.append("mas.machine.jworkers.");
         stb.append(type);
         String typeLong = stb.toString();
-        Class t = Class.forName("mas.machine.jworkers.RSSReader");
+        Class t = Class.forName(typeLong);
         Constructor<?> constructor = t.getConstructor(java.io.File.class);
         Worker jworker = (Worker) constructor.newInstance(iniFile);
         jworker.setWorkerName(name);
