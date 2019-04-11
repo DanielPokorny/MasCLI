@@ -6,26 +6,18 @@
 package mas.machine.jworkers;
 
 import java.util.List;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author daniel
  */
-@XmlRootElement(name = "settings")
 public class EntityExtractorConfig {
     
     public String input;
     public String output;
     
-    @XmlElementWrapper(name="entities")
-    @XmlElement(name="entity")
-    public List<Entity> regexEntities;    
+    public List<Entity> regexEntities;
 
-    @XmlElementWrapper(name="dictionaries")
-    @XmlElement(name="dictionary")
     public List<EntityDictionary> entityDictionaries;
     
     public String dictionariesCategory;

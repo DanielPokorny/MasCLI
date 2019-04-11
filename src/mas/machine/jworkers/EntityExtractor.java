@@ -1,6 +1,13 @@
 package mas.machine.jworkers;
 
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
+import mas.machine.Worker;
+
+import javax.xml.bind.JAXBException;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -8,10 +15,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import mas.machine.Worker;
 
 /**
  *
@@ -37,10 +40,11 @@ public class EntityExtractor extends Worker{
      * @param iniFile soubor *.xml s konfigurací
      * @throws JAXBException
      */
-    public EntityExtractor(File iniFile) throws JAXBException {
-        JAXBContext jaxbContext = JAXBContext.newInstance(EntityExtractorConfig.class);
-        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-        config = (EntityExtractorConfig) jaxbUnmarshaller.unmarshal(iniFile);
+    public EntityExtractor(File iniFile) throws FileNotFoundException {
+        Gson gson = new Gson();
+        JsonReader reader = new JsonReader(new FileReader(iniFile));
+        config = gson.fromJson(reader, EntityExtractorConfig.class);
+
         this.setDaemon(true);
     }
     

@@ -13,10 +13,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import javax.xml.bind.JAXBException;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.InputStreamReader;
 import java.net.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,33 +53,12 @@ public class URLReader extends Worker{
                 url = new URL((String) getMessage_(config.input));
                 Document doc;
                 if(config.proxy == null) {
-                    HttpURLConnection uc = (HttpURLConnection)url.openConnection();
-                    uc.connect();
-
-                    String line = null;
-                    StringBuffer tmp = new StringBuffer();
-                    BufferedReader in = new BufferedReader(new InputStreamReader(uc.getInputStream()));
-                    while ((line = in.readLine()) != null) {
-                        tmp.append(line);
-                    }
-
-                    doc = Jsoup.parse(String.valueOf(tmp));
-                    uc.disconnect();
+                    doc = Jsoup.connect((String) getMessage_(config.input)).get();
                 } else {
                     Authenticator.setDefault(authenticator);
                     Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(config.proxy.address, config.proxy.port));
                     HttpURLConnection uc = (HttpURLConnection)url.openConnection(proxy);
-                    uc.connect();
-
-                    String line = null;
-                    StringBuffer tmp = new StringBuffer();
-                    BufferedReader in = new BufferedReader(new InputStreamReader(uc.getInputStream()));
-                    while ((line = in.readLine()) != null) {
-                        tmp.append(line);
-                    }
-
-                    doc = Jsoup.parse(String.valueOf(tmp));
-                    uc.disconnect();
+                    doc = Jsoup.connect((String) getMessage_(config.input)).proxy(proxy).get();
                 }
 
                 String outputLine = "";
