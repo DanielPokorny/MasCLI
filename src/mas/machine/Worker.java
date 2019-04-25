@@ -52,7 +52,7 @@ public class Worker extends Thread{
      * @return zpráva
      * @throws InterruptedException
      */
-    protected Object getMessage_(String address) throws InterruptedException {
+    protected Object getMessage(String address) throws InterruptedException {
         return workspace_.getMessage(address);
     }
 }

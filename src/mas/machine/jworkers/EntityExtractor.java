@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import mas.machine.Worker;
 
-import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -63,7 +62,7 @@ public class EntityExtractor extends Worker{
             DataSet msg = null;
             
             try {
-                msg = (DataSet) getMessage_(config.input);
+                msg = (DataSet) getMessage(config.input);
                 String text = msg.getText();
                 
                 for(Entity entity : config.regexEntities) {
@@ -87,14 +86,13 @@ public class EntityExtractor extends Worker{
                     if(nextHit != null) {
                         String hit = firstHit.value + nextHit;
                         msg.extractedEntities.add(new ExtractedEntity(config.dictionariesCategory, hit));
+                        System.out.println(hit);
                     }
                 }
                 
                 if(msg.extractedEntities.size() > 0) {
-                    for(ExtractedEntity ee : msg.extractedEntities) {
-                        sendMesage_(config.output, ee.getCategory() + ": " + ee.getText());
-                    }
-                    sendMesage_(config.output, text);
+                    sendMesage_(config.output, msg);
+                    System.out.println(msg.getText());
                 }
             } catch (InterruptedException ex) {
                 Logger.getLogger(EntityExtractor.class.getName()).log(Level.SEVERE, null, ex);

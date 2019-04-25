@@ -12,7 +12,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileReader;
 import java.net.*;
@@ -32,7 +31,6 @@ public class URLReader extends Worker{
     /**
      * Vytvoří Worker.
      * @param iniFile soubor *.xml s konfigurací
-     * @throws JAXBException
      */
     public URLReader(File iniFile) throws Exception {
         Gson gson = new Gson();
@@ -50,15 +48,15 @@ public class URLReader extends Worker{
         while(true) {
             URL url;
             try {
-                url = new URL((String) getMessage_(config.input));
+                url = new URL((String) getMessage(config.input));
                 Document doc;
                 if(config.proxy == null) {
-                    doc = Jsoup.connect((String) getMessage_(config.input)).get();
+                    doc = Jsoup.connect((String) getMessage(config.input)).get();
                 } else {
                     Authenticator.setDefault(authenticator);
                     Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(config.proxy.address, config.proxy.port));
                     HttpURLConnection uc = (HttpURLConnection)url.openConnection(proxy);
-                    doc = Jsoup.connect((String) getMessage_(config.input)).proxy(proxy).get();
+                    doc = Jsoup.connect((String) getMessage(config.input)).proxy(proxy).get();
                 }
 
                 String outputLine = "";
