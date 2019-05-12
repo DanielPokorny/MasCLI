@@ -93,7 +93,7 @@ public class RSSReader extends Worker{
 
         URLConnection conn = null;
 
-        if(config.url != null) {
+        if(config.proxy != null) {
             Authenticator.setDefault(authenticator);
             Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(config.proxy.address, config.proxy.port));
 
